@@ -67,7 +67,7 @@ def main():
         warmup_steps=200,                   # Warmup for stability
         label_smoothing_factor=0.1,         # Label smoothing
         fp16=True,                          # Mixed precision
-        eval_strategy="epoch",              # Fixed parameter name
+        evaluation_strategy="epoch",
         save_strategy="epoch",              # Save each epoch
         save_total_limit=1,                 # Keep only best checkpoint
         report_to="none",                   # Disable wandb/tensorboard
@@ -83,7 +83,7 @@ def main():
         args=training_args,
         train_dataset=train_ds,
         eval_dataset=val_ds,
-        processing_class=tok,  # Use processing_class instead of tokenizer
+        tokenizer=tok,
         data_collator=collator
     )
     

@@ -69,12 +69,6 @@ def main():
     print(f"✅ Generated code saved to {args.out}")
     print(f"Preview:\n{generated_code[:200]}...")
     
-    # Decode and save generated code
-    code = tok.decode(pred[0], skip_special_tokens=True)
-    with open(a.out, "w") as f:
-        f.write(code)
-    
-    print(f"✅ Code written to {a.out}")
 
 if __name__ == "__main__":
     main()
