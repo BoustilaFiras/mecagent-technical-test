@@ -60,21 +60,29 @@ def make_preprocess(tokenizer):
         function: Preprocessing function for dataset.map()
     """
     def preprocess_batch(batch):
-        # Transform images to tensor format for ViT encoder
-        batch["pixel_values"] = [vision_tfm(img.convert("RGB")) for img in batch["image"]]
-        
-        # Tokenize CadQuery code for CodeT5 decoder
-        encoding = tokenizer(
-            batch["cadquery"],
-            truncation=True,           # Truncate long sequences
-            padding="max_length",      # Pad to consistent length
-            max_length=MAX_LEN,        # Maximum sequence length
-            return_tensors=None        # Return lists for batching
-        )
-        batch["input_ids"] = encoding["input_ids"]
-        batch["attention_mask"] = encoding["attention_mask"]
-        
-        return batch
+        try:
+            # Transform images to tensor format for ViT encoder
+            batch["pixel_values"] = [vision_tfm(img.convert("RGB")) for img in batch["image"]]
+            
+            # Tokenize CadQuery code for CodeT5 decoder
+            encoding = tokenizer(
+                batch["cadquery"],
+                truncation=True,           # Truncate long sequences
+                padding="max_length",      # Pad to consistent length
+                max_length=MAX_LEN,        # Maximum sequence length
+                return_tensors=None        # Return lists for batching
+            )
+            batch["input_ids"] = encoding["input_ids"]
+            batch["attention_mask"] = encoding["attention_mask"]
+            
+            return batch
+        except Exception as e:
+            import traceback
+            print("[ERROR] Exception in preprocess_batch:", e)
+            print("Batch keys:", list(batch.keys()))
+            print("Batch sample (first 1):", {k: v[0] if isinstance(v, list) and len(v) > 0 else v for k, v in batch.items()})
+            traceback.print_exc()
+            raise e
     
     return preprocess_batch
 
