@@ -1,0 +1,12 @@
+torch>=2.0
+torchvision>=0.17
+datasets>=2.19
+transformers>=4.40
+bitsandbytes
+peft>=0.10
+cadquery
+tqdm
+accelerate
+trimesh
+scipy
+trl
