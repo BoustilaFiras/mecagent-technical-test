@@ -115,10 +115,10 @@ def get_datasets(subset=None, num_proc=8, streaming=False):
     cols_drop = ["image", "cadquery", "deepcad_id",
                  "token_count", "prompt", "hundred_subset"]
 
-    # Apply preprocessing with multiprocessing
-    train_ds = train_ds.map(preprocess_fn, batched=True, num_proc=num_proc,
+    # Apply preprocessing with multiprocessing (disable for Colab stability)
+    train_ds = train_ds.map(preprocess_fn, batched=True, num_proc=1,  # Force single process for Colab
                             remove_columns=cols_drop)
-    test_ds  = test_ds.map(preprocess_fn,  batched=True, num_proc=num_proc,
+    test_ds  = test_ds.map(preprocess_fn,  batched=True, num_proc=1,  # Force single process for Colab
                             remove_columns=cols_drop)
 
     # Set format for PyTorch compatibility
@@ -128,8 +128,3 @@ def get_datasets(subset=None, num_proc=8, streaming=False):
                        columns=["pixel_values", "input_ids", "attention_mask"])
     
     return train_ds, test_ds, tokenizer
-    train_ds.set_format("torch",
-                        columns=["pixel_values", "input_ids", "attention_mask"])
-    test_ds.set_format("torch",
-                       columns=["pixel_values", "input_ids", "attention_mask"])
-    return train_ds, test_ds, tok
