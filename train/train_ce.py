@@ -67,7 +67,7 @@ def main():
         warmup_steps=200,                   # Warmup for stability
         label_smoothing_factor=0.1,         # Label smoothing
         fp16=True,                          # Mixed precision
-        evaluation_strategy="epoch",
+        eval_strategy="epoch",
         save_strategy="epoch",              # Save each epoch
         save_total_limit=1,                 # Keep only best checkpoint
         report_to="none",                   # Disable wandb/tensorboard
