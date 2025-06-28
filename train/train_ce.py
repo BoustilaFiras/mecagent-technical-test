@@ -15,25 +15,20 @@ def create_vision_collator(tokenizer):
     def collate_fn(batch):
         # Extract pixel values (images) and input_ids (target code)
         pixel_values = torch.stack([item['pixel_values'] for item in batch])
-        input_ids = [item['input_ids'] for item in batch]
-        attention_mask = [item['attention_mask'] for item in batch]
-        
-        # Pad the sequences
-        max_len = max(len(ids) for ids in input_ids)
-        padded_input_ids = []
-        padded_attention_mask = []
-        
-        for ids, mask in zip(input_ids, attention_mask):
-            pad_len = max_len - len(ids)
-            padded_input_ids.append(ids + [tokenizer.pad_token_id] * pad_len)
-            padded_attention_mask.append(mask + [0] * pad_len)
-        
+        input_ids = [item['input_ids'] if isinstance(item['input_ids'], list) else item['input_ids'].tolist() for item in batch]
+        attention_mask = [item['attention_mask'] if isinstance(item['attention_mask'], list) else item['attention_mask'].tolist() for item in batch]
+
+        # Pad the sequences using torch.nn.utils.rnn.pad_sequence
+        input_ids_tensor = torch.nn.utils.rnn.pad_sequence(
+            [torch.tensor(ids) for ids in input_ids], batch_first=True, padding_value=tokenizer.pad_token_id)
+        attention_mask_tensor = torch.nn.utils.rnn.pad_sequence(
+            [torch.tensor(mask) for mask in attention_mask], batch_first=True, padding_value=0)
+
         return {
             'pixel_values': pixel_values,
-            'labels': torch.tensor(padded_input_ids),
-            'decoder_attention_mask': torch.tensor(padded_attention_mask)
+            'labels': input_ids_tensor,
+            'decoder_attention_mask': attention_mask_tensor
         }
-    
     return collate_fn
 
 def parse():
